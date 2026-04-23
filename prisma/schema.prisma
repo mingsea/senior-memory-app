@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Role: "SENIOR" | "CAREGIVER"
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  pin         String
+  role        String   // SENIOR | CAREGIVER
+  displayName String
+  createdAt   DateTime @default(now())
+
+  seniorId    String?
+  senior      User?    @relation("CaregiverSenior", fields: [seniorId], references: [id])
+  caregivers  User[]   @relation("CaregiverSenior")
+
+  trainingSessions TrainingSession[]
+  mediaItems       MediaItem[]
+  authSessions     AuthSession[]
+}
+
+// Auth sessions (for login tokens)
+model AuthSession {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// Media uploaded by caregiver
+model MediaItem {
+  id           String   @id @default(cuid())
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  seniorId     String
+  type         String   // PHOTO | VIDEO
+  url          String
+  caption      String?
+  peopleNames  String?  // comma-separated names for 认人认物
+  year         String?  // e.g. "1985"
+  location     String?  // e.g. "北京"
+  activity     String?  // e.g. "家庭聚餐"
+  tags         String?  // comma-separated tags
+  createdAt    DateTime @default(now())
+
+  attempts     ExerciseAttempt[]
+}
+
+// A training session (group of exercises)
+model TrainingSession {
+  id                 String    @id @default(cuid())
+  seniorId           String
+  senior             User      @relation(fields: [seniorId], references: [id])
+  startedAt          DateTime  @default(now())
+  endedAt            DateTime?
+  durationGoalMins   Int       @default(10)
+  completedExercises Int       @default(0)
+  mood               String?   // HAPPY | OK | SAD
+  notes              String?
+
+  attempts           ExerciseAttempt[]
+}
+
+// One exercise attempt within a session
+model ExerciseAttempt {
+  id            String          @id @default(cuid())
+  sessionId     String
+  session       TrainingSession @relation(fields: [sessionId], references: [id])
+  exerciseType  String          // see ExerciseType constants in lib/types.ts
+  mediaItemId   String?
+  mediaItem     MediaItem?      @relation(fields: [mediaItemId], references: [id])
+  startedAt     DateTime        @default(now())
+  completedAt   DateTime?
+  skipped       Boolean         @default(false)
+  responseData  String          @default("{}")
+  scorePercent  Int?
+  caregiverNote String?
+}
+
+// Per-exercise configuration (one row per exercise type)
+model ExerciseConfig {
+  id            String  @id @default(cuid())
+  exerciseType  String  @unique
+  titleZh       String
+  descriptionZh String
+  enabled       Boolean @default(true)
+  difficulty    Int     @default(1)
+  configData    String  @default("{}")
+}

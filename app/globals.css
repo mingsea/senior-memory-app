@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #fffbf0;
+  --foreground: #1a1a1a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "PingFang SC", "Microsoft YaHei", "Source Han Sans CN",
+    system-ui, sans-serif;
+  font-size: 20px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Senior UI base classes */
+.senior-btn {
+  min-height: 80px;
+  min-width: 80px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
+.senior-btn:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+.senior-text {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.senior-text-xl {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* Choice button for exercises */
+.choice-btn {
+  min-height: 90px;
+  width: 100%;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 1rem;
+  border: 3px solid transparent;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.choice-btn:hover, .choice-btn:focus {
+  border-color: #f59e0b;
+  outline: none;
+}
+
+.choice-btn.correct {
+  background-color: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.choice-btn.wrong {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
 }
